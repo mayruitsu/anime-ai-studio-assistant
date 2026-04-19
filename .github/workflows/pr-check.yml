@@ -1,0 +1,22 @@
+name: PR Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check-diff-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check diff size
+        run: |
+          DIFF=$(git diff --shortstat origin/main...HEAD | awk '{print $4+$6}')
+          echo "差分行数: ${DIFF}行"
+          if [ "${DIFF:-0}" -gt 100 ]; then
+            echo "::error::差分が100行を超えています（${DIFF}行）。1PRの差分は100行以内にしてください。"
+            exit 1
+          fi

@@ -14,9 +14,10 @@ jobs:
 
       - name: Check diff size
         run: |
-          DIFF=$(git diff --shortstat origin/main...HEAD -- ':!docs/' | awk '{print $4+$6}')
-          echo "差分行数: ${DIFF}行（docs/を除く）"
-          if [ "${DIFF:-0}" -gt 100 ]; then
-            echo "::error::差分が100行を超えています（${DIFF}行）。1PRの差分は100行以内にしてください。"
+          TOTAL=$(git diff --shortstat origin/main...HEAD | awk '{print $4+$6}')
+          CODE=$(git diff --shortstat origin/main...HEAD -- ':!docs/' | awk '{print $4+$6}')
+          echo "差分行数: 合計 ${TOTAL:-0}行（コード ${CODE:-0}行 / ドキュメント $((${TOTAL:-0} - ${CODE:-0}))行）"
+          if [ "${CODE:-0}" -gt 100 ]; then
+            echo "::error::コードの差分が100行を超えています（${CODE:-0}行）。1PRの差分は100行以内にしてください。"
             exit 1
           fi

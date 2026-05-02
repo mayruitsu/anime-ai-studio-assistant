@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const MOCK_POINTS = [
+const INITIAL_POINTS = [
   { name: "nose",           x: 0.50, y: 0.08 },
   { name: "left_shoulder",  x: 0.35, y: 0.25 },
   { name: "right_shoulder", x: 0.65, y: 0.25 },
@@ -18,31 +18,77 @@ const MOCK_POINTS = [
 
 function PoseCanvas({ imageSrc }) {
   const canvasRef = useRef(null);
+  const imageRef = useRef(null);
+  const dragging = useRef(null);
+  const [points, setPoints] = useState(INITIAL_POINTS);
+
+  const draw = (pts) => {
+    const canvas = canvasRef.current;
+    const img = imageRef.current;
+    if (!canvas || !img) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+    pts.forEach(({ x, y }) => {
+      ctx.beginPath();
+      ctx.arc(x * img.width, y * img.height, 6, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
+    });
+  };
 
   useEffect(() => {
     if (!imageSrc) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
     const img = new Image();
-
     img.onload = () => {
+      const canvas = canvasRef.current;
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      MOCK_POINTS.forEach(({ x, y }) => {
-        ctx.beginPath();
-        ctx.arc(x * img.width, y * img.height, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "red";
-        ctx.fill();
-      });
+      imageRef.current = img;
+      draw(points);
     };
-
     img.src = imageSrc;
   }, [imageSrc]);
 
-  return <canvas ref={canvasRef} style={{ maxWidth: "500px" }} />;
+  useEffect(() => {
+    draw(points);
+  }, [points]);
+
+  const getPos = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    };
+  };
+
+  const handleMouseDown = (e) => {
+    const { x, y } = getPos(e);
+    const idx = points.findIndex((p) => Math.hypot(p.x - x, p.y - y) < 0.03);
+    if (idx !== -1) dragging.current = idx;
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragging.current === null) return;
+    const { x, y } = getPos(e);
+    setPoints((prev) =>
+      prev.map((p, i) => (i === dragging.current ? { ...p, x, y } : p))
+    );
+  };
+
+  const handleMouseUp = () => {
+    dragging.current = null;
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ maxWidth: "500px" }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    />
+  );
 }
 
 export default PoseCanvas;

@@ -1,26 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-const INITIAL_POINTS = [
-  { name: "nose",           x: 0.50, y: 0.08 },
-  { name: "left_shoulder",  x: 0.35, y: 0.25 },
-  { name: "right_shoulder", x: 0.65, y: 0.25 },
-  { name: "left_elbow",     x: 0.25, y: 0.40 },
-  { name: "right_elbow",    x: 0.75, y: 0.40 },
-  { name: "left_wrist",     x: 0.20, y: 0.55 },
-  { name: "right_wrist",    x: 0.80, y: 0.55 },
-  { name: "left_hip",       x: 0.38, y: 0.55 },
-  { name: "right_hip",      x: 0.62, y: 0.55 },
-  { name: "left_knee",      x: 0.35, y: 0.73 },
-  { name: "right_knee",     x: 0.65, y: 0.73 },
-  { name: "left_ankle",     x: 0.33, y: 0.90 },
-  { name: "right_ankle",    x: 0.67, y: 0.90 },
-];
-
-function PoseCanvas({ imageSrc }) {
+function PoseCanvas({ imageSrc, points, onPointsChange }) {
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const dragging = useRef(null);
-  const [points, setPoints] = useState(INITIAL_POINTS);
 
   const draw = (pts) => {
     const canvas = canvasRef.current;
@@ -71,8 +54,8 @@ function PoseCanvas({ imageSrc }) {
   const handleMouseMove = (e) => {
     if (dragging.current === null) return;
     const { x, y } = getPos(e);
-    setPoints((prev) =>
-      prev.map((p, i) => (i === dragging.current ? { ...p, x, y } : p))
+    onPointsChange(
+      points.map((p, i) => (i === dragging.current ? { ...p, x, y } : p))
     );
   };
 

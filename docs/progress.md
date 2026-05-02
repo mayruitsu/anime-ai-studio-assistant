@@ -1,5 +1,10 @@
 # 開発進捗ログ
 
+## 2026-05-03
+
+- 画像アップロードUIを実装（ファイル選択 → URLを親コンポーネントに渡す）
+- Canvas上にモック関節ポイントを表示（PoseCanvasコンポーネント、useRef・useEffect）
+
 ## 2026-04-20
 
 - FastAPI最小構成を実装（`GET /health`、docker composeで動作確認）

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ImageUploader from "./components/ImageUploader";
+import PoseCanvas from "./components/PoseCanvas";
 
 function App() {
   const [image, setImage] = useState(null);
@@ -8,7 +9,7 @@ function App() {
     <div style={{ padding: "24px" }}>
       <h1>アニメーションアシスタントAI</h1>
       <ImageUploader onUpload={setImage} />
-      {image && <p>画像を読み込みました</p>}
+      <PoseCanvas imageSrc={image} />
     </div>
   );
 }

@@ -23,10 +23,10 @@
 
 | タスク | 状態 |
 |---|---|
-| Python環境構築（Docker内） | ⬜ |
-| Python基礎学習 | ⬜ |
+| Python環境構築（Docker内） | ✅ |
+| Python基礎学習 | ✅ |
 | FastAPI最小構成 | ✅ |
-| MediaPipe導入・動作確認 | ⬜ |
+| MediaPipe導入・動作確認 | ✅ |
 
 ## フェーズ3：ポイント検出
 

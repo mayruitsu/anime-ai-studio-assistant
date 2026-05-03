@@ -1,5 +1,12 @@
 # 開発進捗ログ
 
+## 2026-05-03（続き2）
+
+- MediaPipeを導入（`requirements.txt` に追加、Dockerfileにシステムライブラリを追加）
+- 関節33点の検出動作確認スクリプト（`pose_test.py`）を作成
+- MediaPipe基礎の学習メモを追加（Pose API・BGR/RGB変換・座標の読み方）
+- フェーズ2（Python学習・バックエンド基礎）完了。次回よりフェーズ3（ポイント検出）を開始する
+
 ## 2026-05-03（続き）
 
 - ポイントをドラッグで動かせる機能を実装（mousedown・mousemove・mouseup）

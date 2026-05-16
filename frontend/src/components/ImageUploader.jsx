@@ -6,7 +6,7 @@ function ImageUploader({ onUpload }) {
     if (!file) return;
 
     const url = URL.createObjectURL(file);
-    onUpload(url);
+    onUpload(url, file);
   };
 
   return (

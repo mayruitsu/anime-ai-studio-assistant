@@ -5,11 +5,13 @@ import FramePanel from "./components/FramePanel";
 
 function App() {
   const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [frames, setFrames] = useState([[]]);
   const [currentFrame, setCurrentFrame] = useState(0);
 
   const handleUpload = async (url, file) => {
     setImage(url);
+    setImageFile(file);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -27,6 +29,24 @@ function App() {
     }));
     setFrames([points]);
     setCurrentFrame(0);
+  };
+
+  const handleExport = async () => {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("frames", JSON.stringify(frames));
+
+    const res = await fetch("http://localhost:8080/export-video", {
+      method: "POST",
+      body: formData,
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "animation.mp4";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handlePointsChange = (newPoints) => {
@@ -55,6 +75,9 @@ function App() {
         points={frames[currentFrame]}
         onPointsChange={handlePointsChange}
       />
+      <button onClick={handleExport} disabled={!imageFile}>
+        動画を書き出す
+      </button>
     </div>
   );
 }

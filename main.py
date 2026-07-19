@@ -1,7 +1,11 @@
-from fastapi import FastAPI, File, HTTPException, UploadFile
+import json
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 
 from pose import detect_pose
+from video import generate_video
 
 app = FastAPI()
 
@@ -27,3 +31,15 @@ async def detect_pose_endpoint(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="画像の読み込みに失敗しました")
 
     return {"landmarks": landmarks}
+
+
+@app.post("/export-video")
+async def export_video(file: UploadFile = File(...), frames: str = Form(...)):
+    image_bytes = await file.read()
+    frames_data = json.loads(frames)
+    video_bytes = generate_video(image_bytes, frames_data)
+    return Response(
+        content=video_bytes,
+        media_type="video/mp4",
+        headers={"Content-Disposition": "attachment; filename=animation.mp4"},
+    )

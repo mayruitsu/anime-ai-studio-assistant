@@ -1,5 +1,13 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き22）
+
+- MDMをブラウザから直接呼び出せるよう、`motion-api`サービスを新規追加（FastAPI、PyTorch 2.7.1 + CUDA 12.8、GPU前提）
+- MDM本体（第三者の大きなリポジトリ・学習済みモデル）はこのプロジェクトに含めず、外部ディレクトリを`.env`の`MDM_REPO_PATH`経由でDockerボリュームとしてマウントする方式にした
+- `POST /generate-motion` エンドポイントを実装。内部で `sample.generate`（モーション生成）→ `visualize.render_mesh`（SMPLifyでSMPL回転パラメータ抽出）→ `export_vrm_pose.py`（PR済み）を順に呼び出し、VRMボーン名でのポーズ列JSONを返す
+- セットアップ手順を`docs/tech/motion-api.md`にまとめた
+- フェーズ9（AIによるモーション自動生成）の「アプリへの組み込み」「バックエンドAPI化」が完了
+
 ## 2026-07-20（続き21）
 
 - フェーズ9として、MDM（Motion Diffusion Model）を使ったAIによるモーション自動生成に着手。ロードマップを更新（AIモーション自動生成をフェーズ9として新設、写真から3Dモデル生成の研究はフェーズ10に、GCPはフェーズ11に繰り下げ）

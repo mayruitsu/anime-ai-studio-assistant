@@ -15,3 +15,11 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+
+  motion-api:
+    build: ./motion-api
+    ports:
+      - "8090:8090"
+    volumes:
+      - ${MDM_REPO_PATH}:/workspace/mdm:ro
+    gpus: all

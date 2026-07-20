@@ -1,0 +1,14 @@
+# MediaPipe Poseの関節33点（pose.py参照）を、剛体として動かすパーツ単位にグルーピングする対応表。
+# 各パーツは (付け根の関節, 先端の関節) のペアで表し、pivot は回転の軸となる付け根側の関節インデックス。
+BODY_PARTS = {
+    "head": {"joints": (11, 0), "pivot": 11},
+    "torso": {"joints": (11, 23), "pivot": 11},
+    "upper_arm_left": {"joints": (11, 13), "pivot": 11},
+    "forearm_left": {"joints": (13, 15), "pivot": 13},
+    "upper_arm_right": {"joints": (12, 14), "pivot": 12},
+    "forearm_right": {"joints": (14, 16), "pivot": 14},
+    "thigh_left": {"joints": (23, 25), "pivot": 23},
+    "shin_left": {"joints": (25, 27), "pivot": 25},
+    "thigh_right": {"joints": (24, 26), "pivot": 24},
+    "shin_right": {"joints": (26, 28), "pivot": 26},
+}

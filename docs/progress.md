@@ -1,5 +1,13 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き2）
+
+- `segmentation.py` を新規作成 — MediaPipe Selfie Segmentationで人物マスク（0/255の2値PNG）を生成
+- `POST /segment-person` エンドポイントを追加 — 画像を受け取りマスク画像を返す
+- 動作確認用に `segmentation_test.py` を追加（`pose_test.py`と同じ構成）
+- MediaPipe Selfie Segmentationの学習メモを追加（docs/learn/segmentation-basics.md）
+- フェーズ6のタスク「人物切り抜き」完了。次はパーツ分割の定義（33点を部位ごとにグルーピングする対応表）を進める
+
 ## 2026-07-20（続き）
 
 - `docs/roadmap.md` を更新 — 設計メモの「後回しリスト」を正式なフェーズ7（キャラクターアニメーション高度化：発展）として反映し、GCPデプロイをフェーズ8に繰り下げ

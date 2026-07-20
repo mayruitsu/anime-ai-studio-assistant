@@ -1,5 +1,14 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き21）
+
+- フェーズ9として、MDM（Motion Diffusion Model）を使ったAIによるモーション自動生成に着手。ロードマップを更新（AIモーション自動生成をフェーズ9として新設、写真から3Dモデル生成の研究はフェーズ10に、GCPはフェーズ11に繰り下げ）
+- リポジトリ外の別ディレクトリにMDMをクローンし、Docker上にPyTorch 2.7.1（CUDA 12.8）環境を構築して動作検証。RTX 5070（Blackwell世代）はPyTorch 2.6以前だとGPUカーネル非対応だったため2.7.1で解決
+- 依存関係の互換性問題を複数解決（chumpyのPython 3.11非対応API、moviepyの可視化コード、gitのautocrlfでバイナリpickleファイルが壊れていた問題など）
+- SMPLify（joints2smpl）でxyz座標からSMPL回転パラメータ（24関節×6D回転表現）を抽出できることを確認
+- `motion-api/export_vrm_pose.py`を新規作成 — SMPL関節→VRM humanoidボーンの対応表を用意し、6D回転→XYZオイラー角に変換してVRMボーンにそのまま適用できるJSON形式に変換するスクリプト
+- SMPL・6D回転表現の学習メモを追加（docs/learn/smpl-vrm-retargeting.md）
+
 ## 2026-07-20（続き20）
 
 - `MdmPlayback.jsx`を新規作成 — 外部で生成したポーズ列JSON（`{text, frames: [{ボーン名: {x,y,z}}, ...]}`）をファイル選択で読み込み、VRMに順番に適用しながら動画として書き出す機能（ファイル読み込み版）

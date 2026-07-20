@@ -1,5 +1,6 @@
 import { useState } from "react";
 import VrmViewer from "./components/VrmViewer";
+import BonePoser from "./components/BonePoser";
 
 function App() {
   const [vrm, setVrm] = useState(null);
@@ -16,7 +17,10 @@ function App() {
     <div style={{ padding: "24px" }}>
       <h1>アニメーションアシスタントAI（3Dモデルポージング）</h1>
       <input type="file" accept=".vrm" onChange={handleSelectFile} />
-      {modelUrl && <VrmViewer modelUrl={modelUrl} onVrmLoaded={setVrm} />}
+      <div style={{ display: "flex" }}>
+        {modelUrl && <VrmViewer modelUrl={modelUrl} onVrmLoaded={setVrm} />}
+        <BonePoser vrm={vrm} />
+      </div>
     </div>
   );
 }

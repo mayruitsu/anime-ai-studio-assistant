@@ -1,5 +1,11 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き20）
+
+- `MdmPlayback.jsx`を新規作成 — 外部で生成したポーズ列JSON（`{text, frames: [{ボーン名: {x,y,z}}, ...]}`）をファイル選択で読み込み、VRMに順番に適用しながら動画として書き出す機能（ファイル読み込み版）
+- KeyframeRecorderと同じ`applyPose`の考え方を流用し、あらかじめ用意された全フレームを3フレームに1回間引いて適用する
+- `App.jsx`に組み込み
+
 ## 2026-07-20（続き19）
 
 - `KeyframeRecorder.jsx`を新規作成 — 現在の全関節の回転をキーフレームとして記録し、キーフレーム間を線形補間しながら`canvas.captureStream()` + `MediaRecorder`でWebM動画として書き出す機能

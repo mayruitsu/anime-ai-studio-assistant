@@ -2,6 +2,7 @@ import { useState } from "react";
 import VrmViewer from "./components/VrmViewer";
 import BonePoser from "./components/BonePoser";
 import KeyframeRecorder from "./components/KeyframeRecorder";
+import MdmPlayback from "./components/MdmPlayback";
 
 function App() {
   const [vrm, setVrm] = useState(null);
@@ -26,6 +27,7 @@ function App() {
         <div>
           <BonePoser vrm={vrm} />
           <KeyframeRecorder vrm={vrm} canvas={canvas} />
+          <MdmPlayback vrm={vrm} canvas={canvas} />
         </div>
       </div>
     </div>

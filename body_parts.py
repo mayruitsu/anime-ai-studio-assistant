@@ -12,3 +12,9 @@ BODY_PARTS = {
     "thigh_right": {"joints": (24, 26), "pivot": 24},
     "shin_right": {"joints": (26, 28), "pivot": 26},
 }
+
+# レンダリング時の描画順（奥から手前）。脚→胴体→腕→頭の順に重ねる。
+DRAW_ORDER = [
+    "shin_left", "shin_right", "thigh_left", "thigh_right", "torso",
+    "upper_arm_left", "upper_arm_right", "forearm_left", "forearm_right", "head",
+]

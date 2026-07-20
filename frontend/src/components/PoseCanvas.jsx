@@ -47,8 +47,16 @@ function PoseCanvas({ imageSrc, points, onPointsChange }) {
 
   const handleMouseDown = (e) => {
     const { x, y } = getPos(e);
-    const idx = points.findIndex((p) => Math.hypot(p.x - x, p.y - y) < 0.03);
-    if (idx !== -1) dragging.current = idx;
+    let closestIdx = -1;
+    let closestDist = 0.03;
+    points.forEach((p, i) => {
+      const dist = Math.hypot(p.x - x, p.y - y);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = i;
+      }
+    });
+    if (closestIdx !== -1) dragging.current = closestIdx;
   };
 
   const handleMouseMove = (e) => {

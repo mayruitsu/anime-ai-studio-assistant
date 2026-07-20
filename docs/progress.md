@@ -1,5 +1,10 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き17）
+
+- `App.jsx`を全面的に置き換え、旧2Dパイプライン用UI（ImageUploader・PoseCanvas・FramePanel）から、VRMファイル選択＋`VrmViewer`表示に切り替え
+- 旧UIコンポーネント自体は削除せず保持（フェーズ6・7と同様、技術検証の記録として）
+
 ## 2026-07-20（続き16）
 
 - フェーズ8に着手。`frontend/package.json`に`three`・`@pixiv/three-vrm`を追加

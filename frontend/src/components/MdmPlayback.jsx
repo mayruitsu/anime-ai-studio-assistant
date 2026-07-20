@@ -10,6 +10,8 @@ function applyPose(vrm, pose) {
 function MdmPlayback({ vrm, canvas }) {
   const [frames, setFrames] = useState(null);
   const [text, setText] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [generating, setGenerating] = useState(false);
   const [playing, setPlaying] = useState(false);
 
   const handleSelectFile = async (e) => {
@@ -18,6 +20,23 @@ function MdmPlayback({ vrm, canvas }) {
     const data = JSON.parse(await file.text());
     setFrames(data.frames);
     setText(data.text);
+  };
+
+  const handleGenerate = async () => {
+    if (!prompt) return;
+    setGenerating(true);
+    try {
+      const res = await fetch("http://localhost:8090/generate-motion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: prompt }),
+      });
+      const data = await res.json();
+      setFrames(data.frames);
+      setText(data.text);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handlePlay = async () => {
@@ -53,6 +72,18 @@ function MdmPlayback({ vrm, canvas }) {
   return (
     <div style={{ padding: "16px" }}>
       <h3>AI生成モーション再生（実験）</h3>
+      <div>
+        <input
+          type="text"
+          placeholder="例：a person jumps up and down happily"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+        <button onClick={handleGenerate} disabled={!prompt || generating}>
+          {generating ? "生成中...（2〜3分ほどかかります）" : "AIで生成"}
+        </button>
+      </div>
+      <p>または、生成済みのJSONファイルを選択：</p>
       <input type="file" accept=".json" onChange={handleSelectFile} />
       {text && <p>プロンプト: {text}（{frames.length}フレーム）</p>}
       <button onClick={handlePlay} disabled={!vrm || !frames || playing}>

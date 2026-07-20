@@ -53,9 +53,9 @@
 | フレームをOpenCVで動画に変換 | ✅ |
 | 動画ダウンロード機能 | ✅ |
 
-## フェーズ6：キャラクターアニメーション高度化（MVP）
+## フェーズ6：キャラクターアニメーション高度化（MVP）※一旦保留
 
-詳細設計: [docs/design/character-animation-concept.md](design/character-animation-concept.md) 参照
+詳細設計: [docs/design/character-animation-concept.md](design/character-animation-concept.md) 参照。2D剛体パーツ切り抜き方式の技術検証として実施。ダイナミックな動きへの構造的な限界が判明し、[docs/design/3d-vrm-pivot.md](design/3d-vrm-pivot.md) の方針転換によりフェーズ8・9へ主軸を移す。実装自体は削除せず保持。
 
 | タスク | 状態 |
 |---|---|
@@ -66,9 +66,9 @@
 | フレーム合成（レンダリング） | ✅ |
 | 動画出力の差し替え | ✅ |
 
-## フェーズ7：キャラクターアニメーション高度化（発展）
+## フェーズ7：キャラクターアニメーション高度化（発展）※一旦保留
 
-詳細設計: [docs/design/character-animation-concept.md](design/character-animation-concept.md) の「後回しリスト」参照。フェーズ6のMVP完了後に着手する。
+詳細設計: [docs/design/character-animation-concept.md](design/character-animation-concept.md) の「後回しリスト」参照。フェーズ6同様、方針転換により一旦保留。
 
 | タスク | 状態 |
 |---|---|
@@ -83,7 +83,29 @@
 | 背景の一部変化・レイヤー分けパララックス | ⬜ |
 | 可動域を外れたポーズを指定された場合の挙動 | ⬜ |
 
-## フェーズ8：GCPデプロイ
+## フェーズ8：3Dモデルポージング＆アニメーション（トラックA）
+
+詳細設計: [docs/design/3d-vrm-pivot.md](design/3d-vrm-pivot.md) 参照。既製のVRM（3Dアバター）モデルを使い、関節操作・アニメ的レンダリングでアニメーションを作成する。
+
+| タスク | 状態 |
+|---|---|
+| Three.js + React環境構築 | ⬜ |
+| VRMモデルの読み込み・表示 | ⬜ |
+| 骨格取得・ポインターでの関節操作UI | ⬜ |
+| ポーズ変更に応じたレンダリング | ⬜ |
+| アニメ的レンダリング（トゥーンシェーディング） | ⬜ |
+| フレーム間引き・動画出力 | ⬜ |
+
+## フェーズ9：写真から3Dモデル生成の研究（トラックB）
+
+フェーズ8と並行して進める、時間のかかる探索的タスク。フェーズ8の進行をブロックしない。
+
+| タスク | 状態 |
+|---|---|
+| 既存3D復元AIモデル（PyMAF、PIFuHD等）の調査・選定 | ⬜ |
+| 実写真での精度検証 | ⬜ |
+
+## フェーズ10：GCPデプロイ
 
 | タスク | 状態 |
 |---|---|

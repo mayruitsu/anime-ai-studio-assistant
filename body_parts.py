@@ -18,3 +18,13 @@ DRAW_ORDER = [
     "shin_left", "shin_right", "thigh_left", "thigh_right", "torso",
     "upper_arm_left", "upper_arm_right", "forearm_left", "forearm_right", "head",
 ]
+
+# 複数写真から選ぶ際、このグループ単位で同じ写真を使う（隣接パーツが別写真になり継ぎ目が
+# 目立つのを防ぐ。例：スカートは両脚まとめて同じ写真から選ぶ）
+PART_GROUPS = [
+    ["head"],
+    ["torso"],
+    ["upper_arm_left", "forearm_left"],
+    ["upper_arm_right", "forearm_right"],
+    ["thigh_left", "shin_left", "thigh_right", "shin_right"],
+]

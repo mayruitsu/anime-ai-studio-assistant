@@ -1,6 +1,6 @@
 import math
 
-from body_parts import BODY_PARTS
+from body_parts import BODY_PARTS, PART_GROUPS
 from pose import detect_pose
 from segmentation import segment_person
 from part_cropping import crop_parts
@@ -36,28 +36,33 @@ def build_photo_profiles(photos: list[bytes], segment_fn=segment_person) -> list
 
 
 def select_parts_for_pose(profiles: list[dict], target_points: list[dict]) -> tuple[dict, dict, dict]:
-    # パーツごとに、目標ポーズに一番近い角度で写っている写真を選び、
-    # その写真からの回転角・伸縮率を計算する
+    # パーツ単体ではなく「同じ脚」「同じ腕」などのグループ単位で、目標ポーズに一番近い
+    # 写真を選ぶ。隣接パーツが別々の写真から選ばれて継ぎ目が目立つのを防ぐため
     parts, angles, scales = {}, {}, {}
 
-    for name, part in BODY_PARTS.items():
-        start_idx, end_idx = part["joints"]
-        target_angle = _segment_angle(target_points, start_idx, end_idx)
-        target_len = _segment_length(target_points, start_idx, end_idx)
-
-        best_profile, best_diff = None, None
+    for group in PART_GROUPS:
+        best_profile, best_total_diff = None, None
         for profile in profiles:
-            base_angle = _segment_angle(profile["base_points"], start_idx, end_idx)
-            diff = abs(_normalize_deg(target_angle - base_angle))
-            if best_diff is None or diff < best_diff:
-                best_profile, best_diff = profile, diff
+            total_diff = sum(
+                abs(_normalize_deg(
+                    _segment_angle(target_points, *BODY_PARTS[name]["joints"])
+                    - _segment_angle(profile["base_points"], *BODY_PARTS[name]["joints"])
+                ))
+                for name in group
+            )
+            if best_total_diff is None or total_diff < best_total_diff:
+                best_profile, best_total_diff = profile, total_diff
 
-        base_points = best_profile["base_points"]
-        base_angle = _segment_angle(base_points, start_idx, end_idx)
-        base_len = _segment_length(base_points, start_idx, end_idx)
+        for name in group:
+            start_idx, end_idx = BODY_PARTS[name]["joints"]
+            target_angle = _segment_angle(target_points, start_idx, end_idx)
+            target_len = _segment_length(target_points, start_idx, end_idx)
+            base_points = best_profile["base_points"]
+            base_angle = _segment_angle(base_points, start_idx, end_idx)
+            base_len = _segment_length(base_points, start_idx, end_idx)
 
-        parts[name] = best_profile["parts"][name]
-        angles[name] = _normalize_deg(target_angle - base_angle)
-        scales[name] = target_len / base_len if base_len > 1e-6 else 1.0
+            parts[name] = best_profile["parts"][name]
+            angles[name] = _normalize_deg(target_angle - base_angle)
+            scales[name] = target_len / base_len if base_len > 1e-6 else 1.0
 
     return parts, angles, scales

@@ -4,7 +4,7 @@ import cv2
 from pose import detect_pose
 from segmentation import segment_person
 from part_cropping import crop_parts
-from rotation import calc_rotation_angles
+from rotation import calc_rotation_angles, calc_scales
 from render import render_frame
 
 
@@ -31,7 +31,8 @@ def main(image_path: str):
     target_points[13] = {**elbow, "x": elbow["x"] - 0.05, "y": elbow["y"] + 0.15}
 
     angles = calc_rotation_angles(base_points, target_points)
-    frame = render_frame(parts, angles, target_points, (width, height))
+    scales = calc_scales(base_points, target_points)
+    frame = render_frame(parts, angles, scales, target_points, (width, height))
     cv2.imwrite("render_output.png", frame)
     print("render_output.png に保存しました")
 

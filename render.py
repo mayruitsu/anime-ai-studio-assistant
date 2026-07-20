@@ -1,13 +1,24 @@
+import math
+
 import cv2
 import numpy as np
 
 from body_parts import BODY_PARTS, DRAW_ORDER
 
 
-def _rotate_rgba(image: np.ndarray, angle_deg: float, pivot: tuple[float, float]) -> np.ndarray:
+def _rotate_rgba(image: np.ndarray, angle_deg: float, scale: float, pivot: tuple[float, float]):
     h, w = image.shape[:2]
-    matrix = cv2.getRotationMatrix2D(pivot, angle_deg, 1.0)
-    return cv2.warpAffine(image, matrix, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
+    # 拡大方向のスケールでは回転後にピボット中心から見て元のクロップ枠を超えるため、
+    # はみ出した部分が切り取られないようキャンバス自体を広げてからアフィン変換する
+    pad = int(max(scale, 1.0) * math.hypot(w, h)) + 1
+    matrix = cv2.getRotationMatrix2D(pivot, angle_deg, scale)
+    matrix[0, 2] += pad
+    matrix[1, 2] += pad
+    rotated = cv2.warpAffine(
+        image, matrix, (w + 2 * pad, h + 2 * pad),
+        borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0),
+    )
+    return rotated, (pivot[0] + pad, pivot[1] + pad)
 
 
 def _composite(canvas: np.ndarray, part_image: np.ndarray, x: int, y: int) -> None:
@@ -26,7 +37,7 @@ def _composite(canvas: np.ndarray, part_image: np.ndarray, x: int, y: int) -> No
 
 
 def render_frame(
-    parts: dict, angles: dict, target_points: list[dict],
+    parts: dict, angles: dict, scales: dict, target_points: list[dict],
     canvas_size: tuple[int, int], background_color: tuple[int, int, int] | None = (255, 255, 255),
 ) -> np.ndarray:
     width, height = canvas_size
@@ -41,9 +52,9 @@ def render_frame(
         pivot_idx = BODY_PARTS[name]["pivot"]
         target_x = target_points[pivot_idx]["x"] * width
         target_y = target_points[pivot_idx]["y"] * height
-        rotated = _rotate_rgba(part["image"], angles[name], part["pivot_offset"])
-        paste_x = int(target_x - part["pivot_offset"][0])
-        paste_y = int(target_y - part["pivot_offset"][1])
+        rotated, rotated_pivot = _rotate_rgba(part["image"], angles[name], scales[name], part["pivot_offset"])
+        paste_x = int(target_x - rotated_pivot[0])
+        paste_y = int(target_y - rotated_pivot[1])
         _composite(canvas, rotated, paste_x, paste_y)
 
     return canvas

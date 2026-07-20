@@ -6,7 +6,7 @@ import numpy as np
 
 from segmentation import segment_person
 from part_cropping import crop_parts
-from rotation import calc_rotation_angles
+from rotation import calc_rotation_angles, calc_scales
 from render import render_frame
 
 
@@ -27,7 +27,8 @@ def generate_video(image_bytes: bytes, frames: list[list[dict]], fps: int = 2) -
 
     for target_points in frames:
         angles = calc_rotation_angles(base_points, target_points)
-        frame = render_frame(parts, angles, target_points, (w, h))
+        scales = calc_scales(base_points, target_points)
+        frame = render_frame(parts, angles, scales, target_points, (w, h))
         out.write(frame)
 
     out.release()

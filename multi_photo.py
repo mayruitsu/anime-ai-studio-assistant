@@ -20,15 +20,16 @@ def _normalize_deg(diff: float) -> float:
     return ((diff + 180) % 360) - 180
 
 
-def build_photo_profiles(photos: list[bytes]) -> list[dict]:
+def build_photo_profiles(photos: list[bytes], segment_fn=segment_person) -> list[dict]:
     # 写真ごとにポーズ検出・人物切り抜き・パーツ切り出しを行い、
     # 「その写真ではどのパーツがどんな角度・長さで写っているか」をまとめて持たせる
+    # segment_fnを差し替えれば実写真（segment_person）・イラスト（segment_by_background_color）を切り替えられる
     profiles = []
     for image_bytes in photos:
         base_points = detect_pose(image_bytes)
         if not base_points:
             continue
-        mask_bytes = segment_person(image_bytes)
+        mask_bytes = segment_fn(image_bytes)
         parts = crop_parts(image_bytes, mask_bytes, base_points)
         profiles.append({"base_points": base_points, "parts": parts})
     return profiles

@@ -1,5 +1,13 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き19）
+
+- `KeyframeRecorder.jsx`を新規作成 — 現在の全関節の回転をキーフレームとして記録し、キーフレーム間を線形補間しながら`canvas.captureStream()` + `MediaRecorder`でWebM動画として書き出す機能
+- 補間は10fps・キーフレーム間8ステップの離散更新にすることで、なめらかすぎない「アニメ的なカクつき」を出している
+- `App.jsx`に組み込み、実際に複数キーフレームを記録→動画書き出しまで動作確認済み
+- MediaRecorder/captureStreamの学習メモを追加（docs/learn/mediarecorder-basics.md）
+- フェーズ8（3Dモデルポージング＆アニメーション）の全タスクが完了
+
 ## 2026-07-20（続き18）
 
 - `BonePoser.jsx`を新規作成 — 主要な関節をドロップダウンで選び、XYZ軸のスライダーで回転させるUI

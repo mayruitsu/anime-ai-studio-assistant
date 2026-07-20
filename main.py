@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
 from pose import detect_pose
+from segmentation import segment_person
 from video import generate_video
 
 app = FastAPI()
@@ -31,6 +32,17 @@ async def detect_pose_endpoint(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="画像の読み込みに失敗しました")
 
     return {"landmarks": landmarks}
+
+
+@app.post("/segment-person")
+async def segment_person_endpoint(file: UploadFile = File(...)):
+    contents = await file.read()
+    mask_bytes = segment_person(contents)
+
+    if mask_bytes is None:
+        raise HTTPException(status_code=400, detail="画像の読み込みに失敗しました")
+
+    return Response(content=mask_bytes, media_type="image/png")
 
 
 @app.post("/export-video")

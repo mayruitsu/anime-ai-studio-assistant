@@ -14,7 +14,8 @@ def detect_pose(image_bytes: bytes) -> list[dict] | None:
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    with mp_pose.Pose(static_image_mode=True) as pose:
+    # イラストは実写真より検出が難しいため、精度重視のモデル・低めの検出しきい値を使う
+    with mp_pose.Pose(static_image_mode=True, model_complexity=2, min_detection_confidence=0.1) as pose:
         results = pose.process(image_rgb)
 
     if not results.pose_landmarks:

@@ -1,5 +1,13 @@
 # 開発進捗ログ
 
+## 2026-07-20（続き16）
+
+- フェーズ8に着手。`frontend/package.json`に`three`・`@pixiv/three-vrm`を追加
+- `VrmViewer.jsx`を新規作成 — Three.jsのシーン・カメラ・レンダラーを構築し、VRMモデルを読み込んで表示、OrbitControlsで視点操作
+- `App.jsx`を全面的に置き換え、ファイル選択UI（`<input type="file">`）でユーザーのローカルのVRMファイルを読み込む方式にした（VRMは再配布ライセンスの制約があるためリポジトリに含めない）
+- VRM標準のMToonマテリアルにより、追加実装なしでアニメ的なセルシェーディングの見た目になることを確認
+- 開発時にReact 18 StrictModeの二重effect実行で、破棄済みのVRM読み込みが後から解決してしまう問題に気づき、`cancelled`フラグでガードする形で最初から実装
+
 ## 2026-07-20（続き15）
 
 - 大きな方針転換を決定。`docs/design/3d-vrm-pivot.md` を新規作成し、経緯・判断・新方針をまとめた

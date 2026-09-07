@@ -4,16 +4,27 @@ import BonePoser from "./components/BonePoser";
 import KeyframeRecorder from "./components/KeyframeRecorder";
 import MdmPlayback from "./components/MdmPlayback";
 import { createToolRegistry, connectToolBridge } from "./toolBridge";
+import { addKeyframe, exportKeyframeVideo } from "./keyframeActions";
 
 function App() {
   const [vrm, setVrm] = useState(null);
   const [modelUrl, setModelUrl] = useState(null);
   const [canvas, setCanvas] = useState(null);
-  const vrmRef = useRef(null);
-  vrmRef.current = vrm;
+  const [keyframes, setKeyframes] = useState([]);
+  const [recording, setRecording] = useState(false);
+  const stateRef = useRef({});
+  stateRef.current = { vrm, canvas, keyframes };
+
+  const handleAddKeyframe = () => setKeyframes((prev) => addKeyframe(stateRef.current.vrm, prev));
+  const handleClearKeyframes = () => setKeyframes([]);
+  const handleExportKeyframeVideo = async () => {
+    setRecording(true);
+    await exportKeyframeVideo(stateRef.current.vrm, stateRef.current.canvas, stateRef.current.keyframes);
+    setRecording(false);
+  };
 
   useEffect(() => {
-    const tools = createToolRegistry(() => vrmRef.current);
+    const tools = createToolRegistry(() => stateRef.current.vrm);
     const ws = connectToolBridge("ws://localhost:8080/ws/tools", tools);
     return () => ws.close();
   }, []);
@@ -35,7 +46,14 @@ function App() {
         )}
         <div>
           <BonePoser vrm={vrm} />
-          <KeyframeRecorder vrm={vrm} canvas={canvas} />
+          <KeyframeRecorder
+            vrm={vrm}
+            keyframes={keyframes}
+            recording={recording}
+            onAddKeyframe={handleAddKeyframe}
+            onClear={handleClearKeyframes}
+            onExport={handleExportKeyframeVideo}
+          />
           <MdmPlayback vrm={vrm} canvas={canvas} />
         </div>
       </div>

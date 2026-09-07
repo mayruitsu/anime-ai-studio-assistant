@@ -15,6 +15,11 @@ export function createToolRegistry(getVrm, actions = {}) {
     add_keyframe: () => { actions.addKeyframe?.(); return { ok: true }; },
     clear_keyframes: () => { actions.clearKeyframes?.(); return { ok: true }; },
     export_keyframe_video: async () => { await actions.exportKeyframeVideo?.(); return { ok: true }; },
+    load_vrm_model: ({ url }) => {
+      if (!url) return { error: "url is required" };
+      actions.loadVrmModel?.(url);
+      return { ok: true };
+    },
   };
 }
 

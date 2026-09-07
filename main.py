@@ -85,7 +85,8 @@ async def call_tool(payload: dict):
     await websocket.send_json({"type": "tool_call", "id": call_id, "tool": tool, "params": params})
 
     try:
-        result = await asyncio.wait_for(future, timeout=10.0)
+        # export_keyframe_videoなど、実行に時間がかかるツールも考慮した猶予
+        result = await asyncio.wait_for(future, timeout=60.0)
     except asyncio.TimeoutError:
         _pending_tool_calls.pop(call_id, None)
         raise HTTPException(status_code=504, detail="ツール呼び出しがタイムアウトしました")

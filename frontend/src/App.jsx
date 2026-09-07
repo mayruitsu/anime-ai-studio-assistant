@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import VrmViewer from "./components/VrmViewer";
 import BonePoser from "./components/BonePoser";
 import KeyframeRecorder from "./components/KeyframeRecorder";
 import MdmPlayback from "./components/MdmPlayback";
+import { createToolRegistry, connectToolBridge } from "./toolBridge";
 
 function App() {
   const [vrm, setVrm] = useState(null);
   const [modelUrl, setModelUrl] = useState(null);
   const [canvas, setCanvas] = useState(null);
+  const vrmRef = useRef(null);
+  vrmRef.current = vrm;
+
+  useEffect(() => {
+    const tools = createToolRegistry(() => vrmRef.current);
+    const ws = connectToolBridge("ws://localhost:8080/ws/tools", tools);
+    return () => ws.close();
+  }, []);
 
   const handleSelectFile = (e) => {
     const file = e.target.files[0];

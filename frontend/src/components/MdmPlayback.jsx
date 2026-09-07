@@ -1,11 +1,5 @@
 import { useState } from "react";
-
-function applyPose(vrm, pose) {
-  for (const name of Object.keys(pose)) {
-    const node = vrm.humanoid?.getNormalizedBoneNode(name);
-    if (node) node.rotation.set(pose[name].x, pose[name].y, pose[name].z);
-  }
-}
+import { applyPose } from "../vrmPose";
 
 function MdmPlayback({ vrm, canvas }) {
   const [frames, setFrames] = useState(null);

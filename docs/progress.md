@@ -1,5 +1,13 @@
 # 開発進捗ログ
 
+## 2026-09-08（続き）
+
+- トラックBの残りツールを実装し完了：`KeyframeRecorder`の状態をApp.jsxにリフトアップ（PR #53）、`add_keyframe`/`clear_keyframes`/`export_keyframe_video`（PR #54）、`load_vrm_model`（PR #55、URL指定方式）
+- `MdmPlayback`のモーション生成・再生ロジックを`motionActions.js`に共通化（PR #56）
+- `generate_motion_from_text`はMDM生成に2〜3分かかり同期的な`/tools/call`に向かないため、`start_motion_generation`→`get_motion_generation_status`→`play_and_export_generated_motion`という非同期ジョブ方式に設計（PR #57）
+- これでトラックB（`anime-ai-studio-assistant`側のツールAPI化＋橋渡し）が完了。実装計画のツール一覧（`get_current_pose`, `set_bone_rotation`, `add_keyframe`, `clear_keyframes`, `export_keyframe_video`, `load_vrm_model`, `start_motion_generation`, `get_motion_generation_status`, `play_and_export_generated_motion`）がすべて揃った
+- 次はトラックA（`self-model-experiment`側のSMPLパイプライン）またはトラックD（会話アシスタントサービス本体）に進む想定。トラックAはWSL2側のGit認証未設定で一時停止中（別途対応が必要）
+
 ## 2026-09-08
 
 - 会話アシスタント構想（`docs/design/animation-creation-implementation-plan.md`）のトラックB（ツールAPI化＋バックエンド↔ブラウザの橋渡し）に着手

@@ -78,9 +78,9 @@
 |---|---|---|
 | バックエンド↔ブラウザの橋渡し方式の設計（WebSocket等） | ✅ | `/ws/tools`（WebSocket）＋`POST /tools/call`によるリレー方式で実装（PR #50） |
 | 橋渡しの実装・疎通確認 | ✅ | `get_current_pose`・`set_bone_rotation`で実際に往復動作を確認済み（PR #49, #50, #51）。会話アシスタント（トラックD）は未着手のため、確認は`/tools/call`への直接HTTPリクエストによるもの |
-| 既存機能のツール化（`add_keyframe`, `clear_keyframes`, `export_keyframe_video`, `generate_motion_from_text`, `play_and_export_generated_motion`, `load_vrm_model`） | 🔄 | `get_current_pose`・`set_bone_rotation`は実装済み。残りのツールを順次追加予定 |
+| 既存機能のツール化（`add_keyframe`, `clear_keyframes`, `export_keyframe_video`, `load_vrm_model`, `start_motion_generation`, `get_motion_generation_status`, `play_and_export_generated_motion`） | ✅ | PR #53〜#57で完了。`generate_motion_from_text`はMDM生成に2〜3分かかるため、開始/状態確認/再生を分けた非同期ジョブ方式に設計変更した |
 
-**小計：約5〜7セッション**（うち設計・疎通確認は完了）
+**小計：約5〜7セッション** → **完了**（トラックB全体）
 
 ### トラックC：限定的な自作モデル（`self-model-experiment`）
 

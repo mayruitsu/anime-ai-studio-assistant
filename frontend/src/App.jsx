@@ -23,11 +23,17 @@ function App() {
     setRecording(false);
   };
 
+  const handleLoadVrmFromUrl = (url) => {
+    setVrm(null);
+    setModelUrl(url);
+  };
+
   useEffect(() => {
     const tools = createToolRegistry(() => stateRef.current.vrm, {
       addKeyframe: handleAddKeyframe,
       clearKeyframes: handleClearKeyframes,
       exportKeyframeVideo: handleExportKeyframeVideo,
+      loadVrmModel: handleLoadVrmFromUrl,
     });
     const ws = connectToolBridge("ws://localhost:8080/ws/tools", tools);
     return () => ws.close();

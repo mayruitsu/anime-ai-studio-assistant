@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { applyPose } from "../vrmPose";
+import { generateMotionFromText, playAndExportMotion } from "../motionActions";
 
 function MdmPlayback({ vrm, canvas }) {
   const [frames, setFrames] = useState(null);
@@ -20,12 +20,7 @@ function MdmPlayback({ vrm, canvas }) {
     if (!prompt) return;
     setGenerating(true);
     try {
-      const res = await fetch("http://localhost:8090/generate-motion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: prompt }),
-      });
-      const data = await res.json();
+      const data = await generateMotionFromText(prompt);
       setFrames(data.frames);
       setText(data.text);
     } finally {
@@ -34,32 +29,8 @@ function MdmPlayback({ vrm, canvas }) {
   };
 
   const handlePlay = async () => {
-    if (!canvas || !frames) return;
     setPlaying(true);
-
-    const stream = canvas.captureStream(10);
-    const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
-    const chunks = [];
-    recorder.ondataavailable = (e) => chunks.push(e.data);
-    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
-    recorder.start();
-
-    // 20fpsで生成されたMDMのモーションを、アニメ的な間引きのため3フレームに1回だけ反映する
-    for (let i = 0; i < frames.length; i += 3) {
-      applyPose(vrm, frames[i]);
-      await new Promise((r) => setTimeout(r, 100));
-    }
-
-    recorder.stop();
-    await stopped;
-
-    const blob = new Blob(chunks, { type: "video/webm" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "mdm_animation.webm";
-    a.click();
-    URL.revokeObjectURL(url);
+    await playAndExportMotion(vrm, canvas, frames);
     setPlaying(false);
   };
 

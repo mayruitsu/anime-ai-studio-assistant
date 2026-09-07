@@ -1,5 +1,14 @@
 # 開発進捗ログ
 
+## 2026-09-08
+
+- 会話アシスタント構想（`docs/design/animation-creation-implementation-plan.md`）のトラックB（ツールAPI化＋バックエンド↔ブラウザの橋渡し）に着手
+- `KeyframeRecorder.jsx`・`MdmPlayback.jsx`に重複していたポーズ操作関数（`capturePose`/`applyPose`/`lerpPose`）を`frontend/src/vrmPose.js`に共通化
+- バックエンド（`main.py`）に`/ws/tools`（WebSocket）・`POST /tools/call`を追加。会話アシスタント側からのツール呼び出しをブラウザへ中継する仕組み。uvicornのWebSocketサポートに必要な`websockets`パッケージが`requirements.txt`に不足していたことにも気づき追加
+- フロントエンド側に`toolBridge.js`を新規作成。`get_current_pose`・`set_bone_rotation`の2つのツールを実装し、バックエンドからの呼び出しを実行できることを確認
+- mediapipe等を使わない検証用スクリプトで、実際にuvicornサーバーとNode.jsクライアントを使い、ツール呼び出しの往復（バックエンド→ブラウザ→バックエンド）が正しく動作することを確認。実装計画のマイルストーンM3（簡単なツール呼び出しが会話経由で動作する）に到達
+- 関連PR：#49（共通化）、#50（バックエンド）、#51（フロントエンド）
+
 ## 2026-09-07
 
 - `docs/roadmap.md` のフェーズ10（写真から3Dモデル生成の研究）を更新 — 別リポジトリ`self-model-experiment`側の実際の進捗（環境構築完了、陰影最適化の不安定性を検証中）を反映

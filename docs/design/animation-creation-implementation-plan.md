@@ -74,13 +74,13 @@
 
 現状、`BonePoser.jsx`・`KeyframeRecorder.jsx`・`MdmPlayback.jsx`の処理はすべてブラウザ内のReactコンポーネントがVRMオブジェクトを直接操作している。会話アシスタント（バックエンドサービス）からこれらを呼び出すには、**バックエンドとブラウザ間の橋渡し**を新たに設計する必要がある（今回新たに判明した論点）。
 
-| ステップ | 見積もり | 備考 |
+| ステップ | 状態 | 備考 |
 |---|---|---|
-| バックエンド↔ブラウザの橋渡し方式の設計（WebSocket等） | 1〜2セッション | ツール呼び出しをブラウザに転送し、実行結果を受け取る仕組み |
-| 橋渡しの実装・疎通確認 | 2セッション | 簡単なツール1つ（例：`set_bone_rotation`）で動作確認 |
-| 既存機能のツール化（`get_current_pose`, `add_keyframe`, `clear_keyframes`, `export_keyframe_video`, `generate_motion_from_text`, `play_and_export_generated_motion`, `load_vrm_model`） | 2〜3セッション | 既存ロジックのラップが中心のため比較的軽い |
+| バックエンド↔ブラウザの橋渡し方式の設計（WebSocket等） | ✅ | `/ws/tools`（WebSocket）＋`POST /tools/call`によるリレー方式で実装（PR #50） |
+| 橋渡しの実装・疎通確認 | ✅ | `get_current_pose`・`set_bone_rotation`で実際に往復動作を確認済み（PR #49, #50, #51）。会話アシスタント（トラックD）は未着手のため、確認は`/tools/call`への直接HTTPリクエストによるもの |
+| 既存機能のツール化（`add_keyframe`, `clear_keyframes`, `export_keyframe_video`, `generate_motion_from_text`, `play_and_export_generated_motion`, `load_vrm_model`） | 🔄 | `get_current_pose`・`set_bone_rotation`は実装済み。残りのツールを順次追加予定 |
 
-**小計：約5〜7セッション**
+**小計：約5〜7セッション**（うち設計・疎通確認は完了）
 
 ### トラックC：限定的な自作モデル（`self-model-experiment`）
 
@@ -135,7 +135,7 @@ A・Bは並行して進められるため、実質的な所要期間は「A・B�
 
 1. **M1**：SMPLパイプラインが1人分の写真で最後まで通り、VRMが出力できる（トラックA完了）
 2. **M2**：会話なしで、既存UI操作から生成したVRMを`anime-ai-studio-assistant`で読み込み・ポーズ付けできる（トラックA・B結合）
-3. **M3**：簡単な1つのツール呼び出しが会話経由で動作する（トラックB・Dの橋渡し疎通確認）
+3. **M3**：簡単な1つのツール呼び出しが会話経由で動作する（トラックB・Dの橋渡し疎通確認） 🔄 トラックB側（`/tools/call`を直接叩いての疎通）は2026-09-08に確認済み。トラックD（会話アシスタント自体）が未着手のため、「会話経由」の確認はまだ
 4. **M4**：会話だけで「関節を少し動かして」のような指示が反映される（トラックC・D結合）
 5. **M5**：イラスト入力から動画書き出しまで、会話を主な操作手段として一気通貫で動作する（トラックE完了、ゴール達成）
 

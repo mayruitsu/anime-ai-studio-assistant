@@ -5,6 +5,7 @@ import KeyframeRecorder from "./components/KeyframeRecorder";
 import MdmPlayback from "./components/MdmPlayback";
 import { createToolRegistry, connectToolBridge } from "./toolBridge";
 import { addKeyframe, exportKeyframeVideo } from "./keyframeActions";
+import { generateMotionFromText, playAndExportMotion } from "./motionActions";
 
 function App() {
   const [vrm, setVrm] = useState(null);
@@ -14,6 +15,24 @@ function App() {
   const [recording, setRecording] = useState(false);
   const stateRef = useRef({});
   stateRef.current = { vrm, canvas, keyframes };
+  const motionJobsRef = useRef({});
+
+  // 会話アシスタント向け：MDM生成は2〜3分かかるため、開始(job_id発行)と状態確認を分ける
+  const handleStartMotionGeneration = (prompt) => {
+    const jobId = crypto.randomUUID();
+    motionJobsRef.current[jobId] = { status: "pending" };
+    generateMotionFromText(prompt)
+      .then((data) => { motionJobsRef.current[jobId] = { status: "done", frames: data.frames, text: data.text }; })
+      .catch((err) => { motionJobsRef.current[jobId] = { status: "error", error: String(err) }; });
+    return jobId;
+  };
+  const handleGetMotionGenerationStatus = (jobId) => motionJobsRef.current[jobId];
+  const handlePlayAndExportGeneratedMotion = async (jobId) => {
+    const job = motionJobsRef.current[jobId];
+    if (job?.status !== "done") return false;
+    await playAndExportMotion(stateRef.current.vrm, stateRef.current.canvas, job.frames);
+    return true;
+  };
 
   const handleAddKeyframe = () => setKeyframes((prev) => addKeyframe(stateRef.current.vrm, prev));
   const handleClearKeyframes = () => setKeyframes([]);
@@ -34,6 +53,9 @@ function App() {
       clearKeyframes: handleClearKeyframes,
       exportKeyframeVideo: handleExportKeyframeVideo,
       loadVrmModel: handleLoadVrmFromUrl,
+      startMotionGeneration: handleStartMotionGeneration,
+      getMotionGenerationStatus: handleGetMotionGenerationStatus,
+      playAndExportGeneratedMotion: handlePlayAndExportGeneratedMotion,
     });
     const ws = connectToolBridge("ws://localhost:8080/ws/tools", tools);
     return () => ws.close();

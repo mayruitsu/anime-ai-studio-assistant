@@ -24,7 +24,11 @@ function App() {
   };
 
   useEffect(() => {
-    const tools = createToolRegistry(() => stateRef.current.vrm);
+    const tools = createToolRegistry(() => stateRef.current.vrm, {
+      addKeyframe: handleAddKeyframe,
+      clearKeyframes: handleClearKeyframes,
+      exportKeyframeVideo: handleExportKeyframeVideo,
+    });
     const ws = connectToolBridge("ws://localhost:8080/ws/tools", tools);
     return () => ws.close();
   }, []);

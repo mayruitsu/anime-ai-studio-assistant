@@ -1,5 +1,11 @@
 # 開発進捗ログ
 
+## 2026-09-09（続き2）
+
+- トラックD（OLMo会話アシスタント）に着手。`chat-api/app.py`でOLMo（`allenai/OLMo-2-0425-1B-Instruct`）をロードし会話応答を返すFastAPIサービスの土台を実装
+- CPU推論のみで動作（GPU不要）。curlでの動作確認により、既知の自己認識の誤り（「OpenAIです」と回答）が再現することを確認（ファインチューニング後の効果測定用の基準値）
+- 関連PR：#68（予定）
+
 ## 2026-09-09
 
 - self-model-experimentのSMPLパイプライン（シルエット抽出→フィッティング→VRMエクスポート）を、写真アップロードでVRMを生成する`avatar-api`サービスとしてラップした（`motion-api`と同じFastAPI構成）

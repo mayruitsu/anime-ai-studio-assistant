@@ -18,6 +18,9 @@ BONE_NAMES_JA = {
     "rightUpperLeg": "右太もも", "rightLowerLeg": "右すね", "rightFoot": "右足",
 }
 AXES_JA = {"x": "縦", "y": "横", "z": "ひねり"}
+# 「少し」等のあいまいな表現に対し、対応する角度をランダムではなく固定値にする。
+# ランダムにすると同じ表現に毎回違う正解を割り当てることになり、モデルが学習できない
+AMOUNT_PHRASES = [("少し", 0.3), ("そこそこ", 0.7), ("大きく", 1.2)]
 MOTION_PROMPTS = ["a person walks forward", "a person waves hello", "a person jumps",
                   "a person sits down", "a person runs", "a person bows"]
 SYSTEM_PROMPT = format_tools_for_prompt()
@@ -40,10 +43,10 @@ def generate_examples(seed: int = 0) -> list:
 
     for bone, bone_ja in BONE_NAMES_JA.items():
         for axis, axis_ja in AXES_JA.items():
-            amount = rng.choice([0.2, 0.5, 0.8, 1.0, 1.3])
+            amount_phrase, amount = rng.choice(AMOUNT_PHRASES)
             params = {"bone_name": bone, "x": 0.0, "y": 0.0, "z": 0.0}
             params[axis] = amount
-            examples.append(_example(f"{bone_ja}を{axis_ja}方向に少し回転させて", "set_bone_rotation", params))
+            examples.append(_example(f"{bone_ja}を{axis_ja}方向に{amount_phrase}回転させて", "set_bone_rotation", params))
 
     for phrase in ["今のポーズをキーフレームに追加して", "この姿勢を記録して", "現在の姿勢を保存して"]:
         examples.append(_example(phrase, "add_keyframe", {}))

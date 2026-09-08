@@ -1,16 +1,16 @@
 """OLMo（画像を学習していないテキストのみのLLM）を使った会話アシスタントサービス。
 
-ツール呼び出し（トラックB・Cとの結合）は素のOLMoでは不安定なこと（zero-shot実験、
-docs/design/animation-creation-implementation-plan.md参照）が分かっているため、
-ファインチューニング前提の暫定実装として扱う。基盤（ツール定義の提示→呼び出しの
-解析・実行→結果を踏まえた最終応答の生成）自体はファインチューニング後もそのまま使う。
-CPU推論で十分な速度が出ることを確認済みのため、GPUは不要。
+ツール呼び出しは素のOLMoではzero-shotだと不安定（精度10.6%）なため、
+`finetune_olmo.py`でLoRAファインチューニングしたアダプタ（精度100.0%、
+docs/tech/chat-api.md参照）を`CHAT_API_LORA_ADAPTER_DIR`で指定すれば読み込む。
+未指定の場合は素のOLMoのまま動作する（開発・動作確認用）。
 """
 import json
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from peft import PeftModel
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -19,6 +19,7 @@ from tools import format_tools_for_prompt
 
 MODEL_NAME = "allenai/OLMo-2-0425-1B-Instruct"
 TOOLS_API_BASE_URL = os.environ.get("CHAT_API_TOOLS_BASE_URL", "http://localhost:8080")
+LORA_ADAPTER_DIR = os.environ.get("CHAT_API_LORA_ADAPTER_DIR")
 
 app = FastAPI()
 app.add_middleware(
@@ -27,6 +28,8 @@ app.add_middleware(
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+if LORA_ADAPTER_DIR:
+    model = PeftModel.from_pretrained(model, LORA_ADAPTER_DIR)
 
 
 class Message(BaseModel):

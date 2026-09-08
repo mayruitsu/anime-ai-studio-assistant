@@ -3,6 +3,7 @@ import VrmViewer from "./components/VrmViewer";
 import BonePoser from "./components/BonePoser";
 import KeyframeRecorder from "./components/KeyframeRecorder";
 import MdmPlayback from "./components/MdmPlayback";
+import AvatarGenerator from "./components/AvatarGenerator";
 import { createToolRegistry, connectToolBridge } from "./toolBridge";
 import { addKeyframe, exportKeyframeVideo } from "./keyframeActions";
 import { generateMotionFromText, playAndExportMotion } from "./motionActions";
@@ -72,6 +73,7 @@ function App() {
     <div style={{ padding: "24px" }}>
       <h1>アニメーションアシスタントAI（3Dモデルポージング）</h1>
       <input type="file" accept=".vrm" onChange={handleSelectFile} />
+      <AvatarGenerator onVrmGenerated={handleLoadVrmFromUrl} />
       <div style={{ display: "flex" }}>
         {modelUrl && (
           <VrmViewer modelUrl={modelUrl} onVrmLoaded={setVrm} onCanvasReady={setCanvas} />

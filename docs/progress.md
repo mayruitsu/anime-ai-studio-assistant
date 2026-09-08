@@ -1,5 +1,12 @@
 # 開発進捗ログ
 
+## 2026-09-09
+
+- self-model-experimentのSMPLパイプライン（シルエット抽出→フィッティング→VRMエクスポート）を、写真アップロードでVRMを生成する`avatar-api`サービスとしてラップした（`motion-api`と同じFastAPI構成）
+- nvdiffrastがCUDAコンパイラを要求しmotion-api方式のDockerイメージでは動かないため、Docker化は見送りWSL2の既存GPU環境で直接起動する運用とした（詳細はdocs/tech/avatar-api.md）
+- curlでの直接HTTPリクエスト、およびPlaywright＋実フロントエンドでの表示確認により、「写真アップロード→API→VRM生成→studioでの表示」が動作することを確認
+- 関連PR：#65, #66（予定）
+
 ## 2026-09-08（続き3）
 
 - ファインチューニング前のOLMo（`OLMo-2-0425-1B-Instruct`）がツール呼び出しをzero-shotでどこまでこなせるか実験。ツール定義をシステムプロンプトに書き、3種類の日本語指示（「左肘を少し曲げて」「今のポーズを教えて」「頭を右に少し傾けて」）を与えたところ：

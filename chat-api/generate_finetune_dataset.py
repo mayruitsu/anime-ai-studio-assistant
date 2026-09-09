@@ -25,6 +25,12 @@ MOTION_PROMPTS = ["a person walks forward", "a person waves hello", "a person ju
                   "a person sits down", "a person runs", "a person bows"]
 SYSTEM_PROMPT = format_tools_for_prompt()
 
+# 「もう少し」等、前回の自分の指示を踏まえた相対的な追加指示のバリエーション。
+# 増分は固定値（0.3）にする。ランダムにすると同じ表現に毎回違う正解が付き学習できなくなる
+RELATIVE_MORE_PHRASES = ["もっと動かして", "もう少しお願い", "さらに回転させて", "もう少し動かして"]
+RELATIVE_RESET_PHRASES = ["元に戻して", "さっきの回転をリセットして", "元の姿勢に戻して", "戻して"]
+RELATIVE_MORE_INCREMENT = 0.3
+
 
 def _example(user_text: str, tool: str, params: dict) -> dict:
     return {"messages": [
@@ -32,6 +38,48 @@ def _example(user_text: str, tool: str, params: dict) -> dict:
         {"role": "user", "content": user_text},
         {"role": "assistant", "content": json.dumps({"tool": tool, "params": params}, ensure_ascii=False)},
     ]}
+
+
+def _multi_turn_example(turns: list) -> dict:
+    """turns: [(ユーザーの発話, tool, params), ...] を1つの会話にまとめる。
+    最後のツール呼び出しのみが学習対象（finetune_olmo.pyのマスキング）になるが、
+    それより前のやり取りは文脈として与えられる（「もう少し」のような相対指示が
+    直前の自分の出力を参照できるようにするため）。
+    """
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for user_text, tool, params in turns:
+        messages.append({"role": "user", "content": user_text})
+        messages.append({"role": "assistant", "content": json.dumps({"tool": tool, "params": params}, ensure_ascii=False)})
+    return {"messages": messages}
+
+
+def generate_relative_adjustment_examples(rng) -> list:
+    """「(関節)を回転させて」の後に「もっと」「元に戻して」と続く2ターンの会話例。
+
+    直前の自分の出力（同じ関節・軸への回転）を踏まえて、次の指示に正しく答えられるかを
+    学習させる。会話履歴には直前のツール呼び出しの生JSONがそのまま積まれる前提
+    （フロントエンドのChatBox.jsx参照）。
+    """
+    examples = []
+    for bone, bone_ja in BONE_NAMES_JA.items():
+        for axis, axis_ja in AXES_JA.items():
+            first_text = f"{bone_ja}を{axis_ja}方向に少し回転させて"
+            first_params = {"bone_name": bone, "x": 0.0, "y": 0.0, "z": 0.0}
+            first_params[axis] = 0.3
+
+            more_params = dict(first_params)
+            more_params[axis] = round(0.3 + RELATIVE_MORE_INCREMENT, 2)
+            examples.append(_multi_turn_example([
+                (first_text, "set_bone_rotation", first_params),
+                (rng.choice(RELATIVE_MORE_PHRASES), "set_bone_rotation", more_params),
+            ]))
+
+            reset_params = {"bone_name": bone, "x": 0.0, "y": 0.0, "z": 0.0}
+            examples.append(_multi_turn_example([
+                (first_text, "set_bone_rotation", first_params),
+                (rng.choice(RELATIVE_RESET_PHRASES), "set_bone_rotation", reset_params),
+            ]))
+    return examples
 
 
 def generate_examples(seed: int = 0) -> list:
@@ -47,6 +95,8 @@ def generate_examples(seed: int = 0) -> list:
             params = {"bone_name": bone, "x": 0.0, "y": 0.0, "z": 0.0}
             params[axis] = amount
             examples.append(_example(f"{bone_ja}を{axis_ja}方向に{amount_phrase}回転させて", "set_bone_rotation", params))
+
+    examples.extend(generate_relative_adjustment_examples(rng))
 
     for phrase in ["今のポーズをキーフレームに追加して", "この姿勢を記録して", "現在の姿勢を保存して"]:
         examples.append(_example(phrase, "add_keyframe", {}))

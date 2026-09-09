@@ -58,11 +58,11 @@ CMUのデータ量（約2500件、説明文なし）は、HumanML3D（約15000�
 - MDMの公開コード（MIT）をベースに、収集したデータ量に見合った小規模な設定で学習する → アーキテクチャの発想（拡散モデル・Transformerでのノイズ予測）は参考にしたが、**テキスト条件付けはCLIPではなく自前語彙表・Embeddingに変更**（CLIPは出処が不透明な学習データによるAIモデルであり、CMUデータへの切り替えの動機と矛盾するため）
 - 学習環境：WSL2のRTX 5070で実行。15000ステップ・約2分で学習完了、loss 1.35→0.03〜0.09まで安定して低下
 - 評価：8カテゴリ中4カテゴリ（jump/climb/sit/kick）で生成結果が正しいカテゴリに最も近いことを確認（ランダムなら約12.5%のところ50%）。全カテゴリの明確な分離には至っておらず、32件という学習データの絶対的な少なさによる限界と判断（事前の期待値通り、技術的なバグではない）
-- 詳細：`self-model-experiment/docs/tech/motion-diffusion-from-scratch.md`（PR #59〜#64）
+- **v2改善（2026-09-09）**：ユーザーからのフィードバックを受け、①ランダムな時間窓＋左右反転による水増し（32件→192件）、②Classifier-Free Guidanceを実施。同じ評価で**4/8→7/8に改善**。詳細：`self-model-experiment/docs/tech/motion-diffusion-from-scratch.md`（PR #59〜#70）
 
-### ステップ4：VRMへの適用確認 🔄 2026-09-09、形式互換性まで確認済み
+### ステップ4：VRMへの適用確認 ✅ 2026-09-09完了
 
-- 学習したモデルの出力（SMPL関節角度の時系列）を、`anime-ai-studio-assistant/motion-api/export_vrm_pose.py`と同じ変換ロジックでVRMボーンのポーズに変換し、実際にVRMアバターが動くか確認する → `motion_diffusion_to_vrm_pose.py`（PR #65）で、`export_vrm_pose.py`と完全互換の形式（VRM humanoidボーン名→XYZオイラー角、フレーム列）のJSONに変換できることを確認済み。**実際にこのフロントエンド（three-vrm）に読み込ませて動きを目視確認する作業は未実施**（次のタスク）
+- 学習したモデルの出力（SMPL関節角度の時系列）を、`anime-ai-studio-assistant/motion-api/export_vrm_pose.py`と同じ変換ロジックでVRMボーンのポーズに変換し、実際にVRMアバターが動くか確認する → `motion_diffusion_to_vrm_pose.py`で完全互換の形式に変換し、**このフロントエンドで実際に目視確認済み**。再生のたびに動画がダウンロードされるUXの問題を発見・修正した（PR #82）
 
 ## 関連ドキュメント
 

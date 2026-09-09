@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateMotionFromText, playAndExportMotion } from "../motionActions";
+import { generateMotionFromText, playMotion, playAndExportMotion } from "../motionActions";
 
 function MdmPlayback({ vrm, canvas }) {
   const [frames, setFrames] = useState(null);
@@ -30,6 +30,12 @@ function MdmPlayback({ vrm, canvas }) {
 
   const handlePlay = async () => {
     setPlaying(true);
+    await playMotion(vrm, frames);
+    setPlaying(false);
+  };
+
+  const handleExport = async () => {
+    setPlaying(true);
     await playAndExportMotion(vrm, canvas, frames);
     setPlaying(false);
   };
@@ -52,7 +58,10 @@ function MdmPlayback({ vrm, canvas }) {
       <input type="file" accept=".json" onChange={handleSelectFile} />
       {text && <p>プロンプト: {text}（{frames.length}フレーム）</p>}
       <button onClick={handlePlay} disabled={!vrm || !frames || playing}>
-        {playing ? "再生・書き出し中..." : "再生して動画を書き出す"}
+        {playing ? "再生中..." : "再生"}
+      </button>
+      <button onClick={handleExport} disabled={!vrm || !frames || playing}>
+        {playing ? "再生・書き出し中..." : "動画として書き出す"}
       </button>
     </div>
   );

@@ -9,6 +9,19 @@ export async function generateMotionFromText(prompt) {
   return res.json();
 }
 
+// 20fpsで生成されたMDMのモーションを、アニメ的な間引きのため3フレームに1回だけ反映する
+async function stepThroughFrames(vrm, frames) {
+  for (let i = 0; i < frames.length; i += 3) {
+    applyPose(vrm, frames[i]);
+    await new Promise((r) => setTimeout(r, 100));
+  }
+}
+
+export async function playMotion(vrm, frames) {
+  if (!frames) return;
+  await stepThroughFrames(vrm, frames);
+}
+
 export async function playAndExportMotion(vrm, canvas, frames) {
   if (!canvas || !frames) return;
   const stream = canvas.captureStream(10);
@@ -18,11 +31,7 @@ export async function playAndExportMotion(vrm, canvas, frames) {
   const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
   recorder.start();
 
-  // 20fpsで生成されたMDMのモーションを、アニメ的な間引きのため3フレームに1回だけ反映する
-  for (let i = 0; i < frames.length; i += 3) {
-    applyPose(vrm, frames[i]);
-    await new Promise((r) => setTimeout(r, 100));
-  }
+  await stepThroughFrames(vrm, frames);
   recorder.stop();
   await stopped;
 

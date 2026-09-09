@@ -26,6 +26,13 @@
 - 「頭を縦方向に大きく回転させて」「今のポーズを教えて」のいずれも、bone_name・軸・角度を含め正確なツール呼び出しを生成することを確認。評価スクリプトの100%という数値が実サービス経路でも再現された
 - 関連PR：#76（予定）
 
+## 2026-09-09（続き6）
+
+- `chat-api`をDocker化し`docker-compose.yml`に統合。avatar-apiと違いGPU不要のためCPU版PyTorchで軽量にビルドできた
+- 実際にDockerビルド・起動・`/chat`エンドポイントへのリクエストが動作することを確認
+- 作業中、誤って`git checkout main -- .`を実行し作業ツリーが古いmain内容で一瞬上書きされる事故が発生。コミット前だったため`git restore --source=HEAD`で復旧し、実害はなかった
+- 関連PR：#78（予定）
+
 ## 2026-09-09
 
 - self-model-experimentのSMPLパイプライン（シルエット抽出→フィッティング→VRMエクスポート）を、写真アップロードでVRMを生成する`avatar-api`サービスとしてラップした（`motion-api`と同じFastAPI構成）

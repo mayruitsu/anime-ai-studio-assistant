@@ -6,3 +6,4 @@ __pycache__/
 test.png
 frontend/node_modules/
 frontend/package-lock.json
+chat-api/lora_adapter/

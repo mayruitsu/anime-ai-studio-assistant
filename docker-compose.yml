@@ -36,8 +36,6 @@ services:
     environment:
       # コンテナ間はサービス名で通信するため、apiサービスをホスト名で指定する
       - CHAT_API_TOOLS_BASE_URL=http://api:8080
-      # ファインチューニング済みLoRAアダプタを使う場合は、finetune_olmo.pyの
-      # 出力先をchat-api/lora_adapterに置いた上で、下記2行のコメントを外す
-      # - CHAT_API_LORA_ADAPTER_DIR=/app/lora_adapter
-    # volumes:
-    #   - ./chat-api/lora_adapter:/app/lora_adapter:ro
+      - CHAT_API_LORA_ADAPTER_DIR=/app/lora_adapter
+    volumes:
+      - ./chat-api/lora_adapter:/app/lora_adapter:ro

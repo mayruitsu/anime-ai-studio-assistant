@@ -110,6 +110,10 @@
 
 MDMの実行環境（PyTorch・GPU前提）はこのリポジトリの外（別ディレクトリ）で構築。セットアップ方法は [docs/tech/motion-api.md](tech/motion-api.md) 参照。1回の生成に2〜3分程度かかる（SMPLifyの最適化処理がボトルネック）。
 
+### 自前モーション生成モデルへの移行（2026-09-09〜）
+
+MDMの学習データ（HumanML3D）が商用利用不可のライセンスと判明したため、CMU Graphics Lab Motion Capture Databaseで学習した自前モデルへの移行に着手（詳細：[docs/design/motion-generation-from-scratch-handoff.md](design/motion-generation-from-scratch-handoff.md)）。「1文→全フレーム一括生成」の拡散モデル方式を経て、「現在の姿勢→次の姿勢を1ステップ提案し、人間が毎ステップ手直しする」方式（`pose-suggestion-api`）に転換し、UI連携まで完了。将来的にmotion-apiを置き換える想定。
+
 ## フェーズ10：写真から3Dモデル生成の研究（トラックB）
 
 時間のかかる探索的タスク。他フェーズの進行をブロックしない。別リポジトリ [self-model-experiment](https://github.com/mayruitsu/self-model-experiment) で進行中（ローカルパス: `self-model-experiment`）。

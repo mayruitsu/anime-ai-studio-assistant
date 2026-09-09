@@ -26,8 +26,15 @@ def build_vocab(texts: list[str]) -> list[str]:
 
 
 def encode(text: str, vocab: list[str], max_len: int) -> list[int]:
-    """テキストを語彙表のインデックス列（`max_len`にPAD_TOKENでパディング）に変換する。"""
+    """テキストを語彙表のインデックス列（`max_len`にPAD_TOKENでパディング）に変換する。
+
+    学習データにない単語（語彙表にない単語）はPAD_TOKENとして扱う。語彙表は数十語しかなく
+    未知語が入力される可能性が高いため、例外で落とすのではなく「その単語からは情報を
+    得られない」という扱いにして頑健にする（MotionDenoiserのマスク付き平均プーリングで
+    自然にPAD_TOKENは無視される）。
+    """
     word_to_id = {word: i for i, word in enumerate(vocab)}
-    ids = [word_to_id[word] for word in tokenize(text)]
+    pad_id = word_to_id[PAD_TOKEN]
+    ids = [word_to_id.get(word, pad_id) for word in tokenize(text)]
     ids = ids[:max_len]
-    return ids + [word_to_id[PAD_TOKEN]] * (max_len - len(ids))
+    return ids + [pad_id] * (max_len - len(ids))

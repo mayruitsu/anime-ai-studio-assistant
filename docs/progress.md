@@ -1,5 +1,10 @@
 # 開発進捗ログ
 
+## 2026-09-09（続き7）
+
+- 新テーマ「自前モーション生成モデルの開発」（`docs/design/motion-generation-from-scratch-handoff.md`）の作業リポジトリを`self-model-experiment`に決定し、ステップ1（CMUモーキャプ→SMPL変換パイプラインの検証）を完了した。詳細は`self-model-experiment`側の`docs/progress.md`・`docs/tech/cmu-mocap-to-smpl-retargeting.md`参照（PR #50〜#55）
+- 本リポジトリの引き継ぎ資料も完了状況に同期
+
 ## 2026-09-09（続き2）
 
 - トラックD（OLMo会話アシスタント）に着手。`chat-api/app.py`でOLMo（`allenai/OLMo-2-0425-1B-Instruct`）をロードし会話応答を返すFastAPIサービスの土台を実装

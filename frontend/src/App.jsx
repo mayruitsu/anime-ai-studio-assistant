@@ -3,6 +3,7 @@ import VrmViewer from "./components/VrmViewer";
 import BonePoser from "./components/BonePoser";
 import KeyframeRecorder from "./components/KeyframeRecorder";
 import PoseSuggestion from "./components/PoseSuggestion";
+import ChatBox from "./components/ChatBox";
 import MdmPlayback from "./components/MdmPlayback";
 import AvatarGenerator from "./components/AvatarGenerator";
 import { createToolRegistry, connectToolBridge } from "./toolBridge";
@@ -82,6 +83,7 @@ function App() {
         <div>
           <BonePoser vrm={vrm} />
           <PoseSuggestion vrm={vrm} />
+          <ChatBox />
           <KeyframeRecorder
             vrm={vrm}
             keyframes={keyframes}

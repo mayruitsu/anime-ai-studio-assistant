@@ -1,5 +1,10 @@
 # 開発進捗ログ
 
+## 2026-09-09（続き9）
+
+- フロントエンドでモーション拡散モデルの出力を目視確認。「AI生成モーション再生」で再生のたびに動画がダウンロードされる問題を発見し、「再生」「動画として書き出す」の2ボタンに分離（PR #82、Playwrightで動作確認）
+- 目視確認のフィードバックを受け、`self-model-experiment`側で学習方法を改善（データ拡張＋Classifier-Free Guidance）。カテゴリ分離の評価が4/8→7/8に改善。詳細は`self-model-experiment`側のドキュメント参照
+
 ## 2026-09-09（続き8）
 
 - 新テーマ「自前モーション生成モデルの開発」のステップ2（テンプレートによるラベル生成）〜ステップ4（VRMへの適用確認）を`self-model-experiment`側で完了。生成結果を`export_vrm_pose.py`と完全互換のVRMポーズJSONに変換できることまで確認済み（実フロントエンドでの目視確認は次のタスク）。詳細は`self-model-experiment`側の`docs/progress.md`・`docs/tech/motion-diffusion-from-scratch.md`参照（PR #56〜#66）

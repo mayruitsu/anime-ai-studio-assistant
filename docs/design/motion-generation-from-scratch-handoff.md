@@ -47,19 +47,22 @@ CMUのデータ量（約2500件、説明文なし）は、HumanML3D（約15000�
 3. 変換結果を`self-model-experiment/scripts/smpl_lbs.py`の`pose_and_skin`に通す`cmu_to_smpl_visual_check.py`（PR #54）で、被験者#7の歩行データ（316フレーム）が数値的に妥当であることを確認（頭部が常に骨盤より上、バウンディングボックスが安定、左膝の曲げ角度が歩行周期に沿って滑らかに変化）
 4. **この段階で変換品質に問題がないか十分確認してから次に進む**（変換が不正確だと、その後の学習データ全体が汚染される）→ 数値指標に加え、関節のワールド座標をスティック図にプロットして目視確認。**両脚が交互に前後する自然な歩行、腕が脚と逆位相で振れる（人間の歩行の特徴）ことを確認**し、変換品質に問題なしと判断した（詳細：`self-model-experiment/docs/tech/cmu-mocap-to-smpl-retargeting.md`）
 
-### ステップ2：テンプレートによる自然文ラベルの自動生成
+### ステップ2：テンプレートによる自然文ラベルの自動生成 ✅ 2026-09-09完了
 
 - `self-model-experiment/scripts/generate_skeleton_edit_dataset.py`や`anime-ai-studio-assistant/chat-api/generate_finetune_dataset.py`と同じ発想：CMUの動作カテゴリ（歩く・走る等）とメタデータ（速度、方向等が取れれば）から、テンプレートで自然文の説明を自動生成する
 - 例：「歩く」というカテゴリのBVHファイルに対し、「歩く」「ゆっくり歩く」「前に歩く」等のバリエーションをテンプレートで生成
+- 実装：CMUのFAQsの「データベース全体をクロールしないでほしい」という要請を尊重し、カテゴリ検索を数回行っただけで8動作（walk, run, jump, climb, wave, sit, punch, kick）を`cmu_motion_catalog.py`に選定（PR #56）。`generate_motion_labels.py`（PR #57）で各動作にHumanML3D同様の英語キャプションを4種類ずつテンプレート生成（計32件）。英語なのは、`motion-api`・`chat-api`が既存MDM（HumanML3D学習）に合わせて英語のプロンプトを使っているため、将来この自作モデルに差し替える際にインターフェースを合わせる目的
 
-### ステップ3：小規模な拡散モデルの学習
+### ステップ3：小規模な拡散モデルの学習 ✅ 2026-09-09完了（限界あり、詳細は下記）
 
-- MDMの公開コード（MIT）をベースに、収集したデータ量に見合った小規模な設定で学習する
-- 学習環境：WSL2にRTX 5070（VRAM約12.8GB）あり。OLMoのLoRAファインチューニングで実績あり（`chat-api/finetune_olmo.py`参照、ただし拡散モデルの学習は分類問題よりずっと重いため、データ量・モデルサイズの調整が必要になる見込み）
+- MDMの公開コード（MIT）をベースに、収集したデータ量に見合った小規模な設定で学習する → アーキテクチャの発想（拡散モデル・Transformerでのノイズ予測）は参考にしたが、**テキスト条件付けはCLIPではなく自前語彙表・Embeddingに変更**（CLIPは出処が不透明な学習データによるAIモデルであり、CMUデータへの切り替えの動機と矛盾するため）
+- 学習環境：WSL2のRTX 5070で実行。15000ステップ・約2分で学習完了、loss 1.35→0.03〜0.09まで安定して低下
+- 評価：8カテゴリ中4カテゴリ（jump/climb/sit/kick）で生成結果が正しいカテゴリに最も近いことを確認（ランダムなら約12.5%のところ50%）。全カテゴリの明確な分離には至っておらず、32件という学習データの絶対的な少なさによる限界と判断（事前の期待値通り、技術的なバグではない）
+- 詳細：`self-model-experiment/docs/tech/motion-diffusion-from-scratch.md`（PR #59〜#64）
 
-### ステップ4：VRMへの適用確認
+### ステップ4：VRMへの適用確認 🔄 2026-09-09、形式互換性まで確認済み
 
-- 学習したモデルの出力（SMPL関節角度の時系列）を、`anime-ai-studio-assistant/motion-api/export_vrm_pose.py`と同じ変換ロジックでVRMボーンのポーズに変換し、実際にVRMアバターが動くか確認する
+- 学習したモデルの出力（SMPL関節角度の時系列）を、`anime-ai-studio-assistant/motion-api/export_vrm_pose.py`と同じ変換ロジックでVRMボーンのポーズに変換し、実際にVRMアバターが動くか確認する → `motion_diffusion_to_vrm_pose.py`（PR #65）で、`export_vrm_pose.py`と完全互換の形式（VRM humanoidボーン名→XYZオイラー角、フレーム列）のJSONに変換できることを確認済み。**実際にこのフロントエンド（three-vrm）に読み込ませて動きを目視確認する作業は未実施**（次のタスク）
 
 ## 関連ドキュメント
 

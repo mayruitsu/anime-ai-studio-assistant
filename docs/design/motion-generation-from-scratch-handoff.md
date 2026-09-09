@@ -40,12 +40,12 @@ CMUのデータ量（約2500件、説明文なし）は、HumanML3D（約15000�
 
 このプロジェクトでこれまで実績のある「小さく検証してから積み上げる」進め方を踏襲する。**いきなり学習に進まず、まずデータ準備パイプラインの品質を確認すること。**
 
-### ステップ1：CMUモーキャプ→SMPL変換パイプラインの検証（最優先）
+### ステップ1：CMUモーキャプ→SMPL変換パイプラインの検証（最優先） ✅ 2026-09-09完了
 
-1. CMU Graphics Lab Motion Capture Database（`https://mocap.cs.cmu.edu/`）から、歩く・走る・手を振る等の基本動作のBVHファイルを少数取得
-2. BVH形式からSMPL形式（関節角度θ）への変換処理を実装する。ゼロから書くか、MITライセンス等の互換性がある既存の変換ツール（要調査、例えば`bvh-python`等のBVHパーサー＋独自のリターゲティングロジック）を使うか検討する
-3. 変換結果を`self-model-experiment/scripts/smpl_lbs.py`の`pose_and_skin`に通し、実際にSMPLメッシュが自然に動くか目視確認する（既存の`export_vrm.py`と組み合わせれば、VRMアバターに適用して確認することも可能）
-4. **この段階で変換品質に問題がないか十分確認してから次に進む**（変換が不正確だと、その後の学習データ全体が汚染される）
+1. ~~CMU Graphics Lab Motion Capture Database（`https://mocap.cs.cmu.edu/`）から、歩く・走る・手を振る等の基本動作のBVHファイルを少数取得~~ → **公式配布形式はBVHではなくASF/AMCと判明**（サイトのFAQsで確認。第三者によるBVH変換版はライセンスが不明確なため使わない方針にした）。`download_cmu_mocap.py`で公式サイトから直接取得（PR #50）
+2. ASF/AMC形式のパーサー（`cmu_asf_amc.py`、PR #51・#52）と、SMPLの24関節・軸角度表現へのリターゲティング（`cmu_to_smpl.py`、PR #53）を実装
+3. 変換結果を`self-model-experiment/scripts/smpl_lbs.py`の`pose_and_skin`に通す`cmu_to_smpl_visual_check.py`（PR #54）で、被験者#7の歩行データ（316フレーム）が数値的に妥当であることを確認（頭部が常に骨盤より上、バウンディングボックスが安定、左膝の曲げ角度が歩行周期に沿って滑らかに変化）
+4. **この段階で変換品質に問題がないか十分確認してから次に進む**（変換が不正確だと、その後の学習データ全体が汚染される）→ 数値指標に加え、関節のワールド座標をスティック図にプロットして目視確認。**両脚が交互に前後する自然な歩行、腕が脚と逆位相で振れる（人間の歩行の特徴）ことを確認**し、変換品質に問題なしと判断した（詳細：`self-model-experiment/docs/tech/cmu-mocap-to-smpl-retargeting.md`）
 
 ### ステップ2：テンプレートによる自然文ラベルの自動生成
 
@@ -69,6 +69,6 @@ CMUのデータ量（約2500件、説明文なし）は、HumanML3D（約15000�
 - `self-model-experiment/scripts/export_vrm.py`（SMPL→VRMエクスポート）
 - `anime-ai-studio-assistant/chat-api/generate_finetune_dataset.py`（テンプレートによる合成データ生成の実績パターン）
 
-## この新テーマの位置づけについて（要確認）
+## この新テーマの位置づけについて
 
-このタスクをどちらのリポジトリで進めるか、まだ決めていない。`self-model-experiment`（「学習データの出処が明確な小さいモデルを自作する」という既存の方針に合う）が自然だと思われるが、**着手時にユーザーに確認するか、状況に応じて判断すること**。新しいリポジトリを作る選択肢もある。
+2026-09-09、ユーザーに確認し`self-model-experiment`で進めることに決定した（PR #50〜#55）。以後の実装・進捗はすべて`self-model-experiment`側の`docs/progress.md`・本ファイルのコピーを参照。

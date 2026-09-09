@@ -24,7 +24,7 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["http://localhost:5173"], allow_methods=["*"], allow_headers=["*"],
 )
 
-CHECKPOINT_PATH = os.environ.get("POSE_SUGGESTION_CHECKPOINT", "frame_transition_model_v1.pt")
+CHECKPOINT_PATH = os.environ.get("POSE_SUGGESTION_CHECKPOINT", "frame_transition_model_v2.pt")
 MAX_LEN = 8
 
 # self-model-experimentのexport_vrm_pose.py・motion_diffusion_to_vrm_pose.pyと同じ対応表

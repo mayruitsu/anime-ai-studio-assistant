@@ -39,7 +39,9 @@ class Message(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[Message]
-    max_new_tokens: int = 200
+    # ツール呼び出しJSONは長くても数十トークンで収まるため、応答速度を優先して小さめにする
+    # （CPU推論のため、生成トークン数がそのまま体感速度に直結する）
+    max_new_tokens: int = 80
 
 
 def generate_reply(messages: list[dict], max_new_tokens: int) -> str:

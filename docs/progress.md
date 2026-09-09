@@ -1,5 +1,10 @@
 # 開発進捗ログ
 
+## 2026-09-09（続き8）
+
+- 新テーマ「自前モーション生成モデルの開発」のステップ2（テンプレートによるラベル生成）〜ステップ4（VRMへの適用確認）を`self-model-experiment`側で完了。生成結果を`export_vrm_pose.py`と完全互換のVRMポーズJSONに変換できることまで確認済み（実フロントエンドでの目視確認は次のタスク）。詳細は`self-model-experiment`側の`docs/progress.md`・`docs/tech/motion-diffusion-from-scratch.md`参照（PR #56〜#66）
+- 本リポジトリの引き継ぎ資料も同期
+
 ## 2026-09-09（続き7）
 
 - 新テーマ「自前モーション生成モデルの開発」（`docs/design/motion-generation-from-scratch-handoff.md`）の作業リポジトリを`self-model-experiment`に決定し、ステップ1（CMUモーキャプ→SMPL変換パイプラインの検証）を完了した。詳細は`self-model-experiment`側の`docs/progress.md`・`docs/tech/cmu-mocap-to-smpl-retargeting.md`参照（PR #50〜#55）

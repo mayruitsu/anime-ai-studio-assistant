@@ -46,6 +46,12 @@ mediapipeのバージョン非互換で本物の`api`サービス（main.py）�
 
 評価スクリプトでの100%という数値が、実際のサービス経路でも再現することを確認した。ツール実行結果を踏まえた最終応答の自然文生成（followup）は、1.5Bという小規模モデルの限界でやや不自然になることがあるが、ツール呼び出し自体（本質的な機能）は正確に動作する。
 
+## Docker化
+
+`avatar-api`と異なりGPU（CUDAコンパイラ）に依存しないため、Docker化のハードルが低い。CPU版PyTorch（`--index-url https://download.pytorch.org/whl/cpu`）を使いイメージサイズを抑えている。`docker-compose.yml`に追加し、実際にビルド・起動・`/chat`エンドポイントへのリクエストが動作することを確認した。
+
+コンテナ間通信のため、`CHAT_API_TOOLS_BASE_URL`は`http://api:8080`（サービス名）を指定する。ファインチューニング済みLoRAアダプタは学習成果物（大きなバイナリ）のためGit管理対象外とし、`chat-api/lora_adapter/`に配置した上でdocker-compose.ymlのコメントアウトを外してマウントする運用とした。
+
 ## 今後の課題
 
 - 本物のapiサービスとの統合確認（mediapipeのバージョン固定・動作確認が別途必要）

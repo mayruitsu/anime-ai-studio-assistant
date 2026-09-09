@@ -24,6 +24,11 @@ services:
       - ${MDM_REPO_PATH}:/workspace/mdm:ro
     gpus: all
 
+  pose-suggestion-api:
+    build: ./pose-suggestion-api
+    ports:
+      - "8093:8093"
+
   chat-api:
     build: ./chat-api
     ports:

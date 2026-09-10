@@ -1,9 +1,25 @@
+// 指ボーン（親指のみMetacarpal始まり、他はProximal始まり）はループで機械的に生成する
+const FINGER_JOINTS = {
+  Thumb: ["Metacarpal", "Proximal", "Distal"],
+  Index: ["Proximal", "Intermediate", "Distal"],
+  Middle: ["Proximal", "Intermediate", "Distal"],
+  Ring: ["Proximal", "Intermediate", "Distal"],
+  Little: ["Proximal", "Intermediate", "Distal"],
+};
+const FINGER_BONE_NAMES = ["left", "right"].flatMap((side) =>
+  Object.entries(FINGER_JOINTS).flatMap(([finger, joints]) =>
+    joints.map((joint) => `${side}${finger}${joint}`)
+  )
+);
+
 export const BONE_NAMES = [
-  "head", "neck", "chest", "spine", "hips",
+  "head", "neck", "chest", "upperChest", "spine", "hips", "jaw", "leftEye", "rightEye",
+  "leftShoulder", "rightShoulder",
   "leftUpperArm", "leftLowerArm", "leftHand",
   "rightUpperArm", "rightLowerArm", "rightHand",
-  "leftUpperLeg", "leftLowerLeg", "leftFoot",
-  "rightUpperLeg", "rightLowerLeg", "rightFoot",
+  "leftUpperLeg", "leftLowerLeg", "leftFoot", "leftToes",
+  "rightUpperLeg", "rightLowerLeg", "rightFoot", "rightToes",
+  ...FINGER_BONE_NAMES,
 ];
 
 export function capturePose(vrm) {

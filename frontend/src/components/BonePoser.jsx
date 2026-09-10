@@ -1,12 +1,5 @@
 import { useState } from "react";
-
-const BONE_NAMES = [
-  "head", "neck", "chest", "spine", "hips",
-  "leftUpperArm", "leftLowerArm", "leftHand",
-  "rightUpperArm", "rightLowerArm", "rightHand",
-  "leftUpperLeg", "leftLowerLeg", "leftFoot",
-  "rightUpperLeg", "rightLowerLeg", "rightFoot",
-];
+import { BONE_NAMES } from "../vrmPose";
 
 function BonePoser({ vrm }) {
   const [boneName, setBoneName] = useState(BONE_NAMES[0]);

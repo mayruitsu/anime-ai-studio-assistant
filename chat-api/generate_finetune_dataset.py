@@ -10,12 +10,37 @@ import random
 
 from tools import format_tools_for_prompt
 
+# VRM humanoidの指ボーン（親指のみMetacarpal始まり、他はProximal始まり）を機械的に生成する。
+# 手打ちすると量が多くタイプミスの元になるため、対応表からループで組み立てる
+_FINGER_JOINTS_JA = {"Metacarpal": "の付け根", "Proximal": "の根元", "Intermediate": "の第二関節", "Distal": "の先"}
+_FINGER_JOINT_ORDER = {
+    "Thumb": ["Metacarpal", "Proximal", "Distal"],
+    "Index": ["Proximal", "Intermediate", "Distal"],
+    "Middle": ["Proximal", "Intermediate", "Distal"],
+    "Ring": ["Proximal", "Intermediate", "Distal"],
+    "Little": ["Proximal", "Intermediate", "Distal"],
+}
+_FINGERS_JA = {"Thumb": "親指", "Index": "人差し指", "Middle": "中指", "Ring": "薬指", "Little": "小指"}
+
+
+def _finger_bone_names_ja() -> dict:
+    names = {}
+    for side, side_ja in [("left", "左"), ("right", "右")]:
+        for finger, finger_ja in _FINGERS_JA.items():
+            for joint in _FINGER_JOINT_ORDER[finger]:
+                names[f"{side}{finger}{joint}"] = f"{side_ja}{finger_ja}{_FINGER_JOINTS_JA[joint]}"
+    return names
+
+
 BONE_NAMES_JA = {
-    "head": "頭", "neck": "首", "chest": "胸", "spine": "背骨", "hips": "腰",
+    "head": "頭", "neck": "首", "chest": "胸", "upperChest": "上胸", "spine": "背骨", "hips": "腰",
+    "jaw": "あご", "leftEye": "左目", "rightEye": "右目",
+    "leftShoulder": "左肩甲骨", "rightShoulder": "右肩甲骨",
     "leftUpperArm": "左上腕", "leftLowerArm": "左前腕", "leftHand": "左手",
     "rightUpperArm": "右上腕", "rightLowerArm": "右前腕", "rightHand": "右手",
-    "leftUpperLeg": "左太もも", "leftLowerLeg": "左すね", "leftFoot": "左足",
-    "rightUpperLeg": "右太もも", "rightLowerLeg": "右すね", "rightFoot": "右足",
+    "leftUpperLeg": "左太もも", "leftLowerLeg": "左すね", "leftFoot": "左足", "leftToes": "左つま先",
+    "rightUpperLeg": "右太もも", "rightLowerLeg": "右すね", "rightFoot": "右足", "rightToes": "右つま先",
+    **_finger_bone_names_ja(),
 }
 AXES_JA = {"x": "縦", "y": "横", "z": "ひねり"}
 # 「少し」等のあいまいな表現に対し、対応する角度をランダムではなく固定値にする。

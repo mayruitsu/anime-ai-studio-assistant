@@ -27,11 +27,15 @@ app.add_middleware(
 CHECKPOINT_PATH = os.environ.get("POSE_SUGGESTION_CHECKPOINT", "frame_transition_model_v2.pt")
 MAX_LEN = 8
 
-# self-model-experimentのexport_vrm_pose.py・motion_diffusion_to_vrm_pose.pyと同じ対応表
+# self-model-experimentのexport_vrm_pose.py・motion_diffusion_to_vrm_pose.pyの対応表をベースに、
+# SMPLの残り関節（9,10,11,13,14）も追加した拡張版。cmu_to_smpl.pyのリターゲティングはSMPLの
+# 24関節すべてを埋めているため、モデルの再学習なしにこれらを出力へ含められる
+# （22,23=SMPLのhand関節はVRM側に対応するボーンがなく手首と役割が重複するため未使用）
 SMPL_TO_VRM = {
     0: "hips", 1: "leftUpperLeg", 2: "rightUpperLeg", 3: "spine",
     4: "leftLowerLeg", 5: "rightLowerLeg", 6: "chest",
-    7: "leftFoot", 8: "rightFoot", 12: "neck", 15: "head",
+    7: "leftFoot", 8: "rightFoot", 9: "upperChest", 10: "leftToes", 11: "rightToes",
+    12: "neck", 13: "leftShoulder", 14: "rightShoulder", 15: "head",
     16: "leftUpperArm", 17: "rightUpperArm", 18: "leftLowerArm", 19: "rightLowerArm",
     20: "leftHand", 21: "rightHand",
 }
